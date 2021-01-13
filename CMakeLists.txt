@@ -5,7 +5,7 @@ if(CMAKE_EXECUTABLE_SUFFIX)
 endif()
 
 project(libjpeg-turbo C)
-set(VERSION 2.0.91)
+set(VERSION 2.0.90)
 string(REPLACE "." ";" VERSION_TRIPLET ${VERSION})
 list(GET VERSION_TRIPLET 0 VERSION_MAJOR)
 list(GET VERSION_TRIPLET 1 VERSION_MINOR)
@@ -67,10 +67,6 @@ elseif(CMAKE_SYSTEM_PROCESSOR_LC MATCHES "ppc*" OR
 else()
   set(CPU_TYPE ${CMAKE_SYSTEM_PROCESSOR_LC})
 endif()
-if(MSVC_IDE AND CMAKE_GENERATOR_PLATFORM MATCHES "arm64")
-  set(CPU_TYPE arm64)
-endif()
-
 message(STATUS "${BITS}-bit build (${CPU_TYPE})")
 
 
@@ -149,7 +145,7 @@ macro(boolean_number var)
   endif()
 endmacro()
 
-option(ENABLE_SHARED "Build shared libraries" TRUE)
+option(ENABLE_SHARED "Build shared libraries" FALSE)
 boolean_number(ENABLE_SHARED)
 option(ENABLE_STATIC "Build static libraries" TRUE)
 boolean_number(ENABLE_STATIC)
@@ -641,15 +637,15 @@ if(WITH_TURBOJPEG)
       set_target_properties(turbojpeg-static PROPERTIES OUTPUT_NAME turbojpeg)
     endif()
 
-    add_executable(tjunittest-static tjunittest.c tjutil.c md5/md5.c
-      md5/md5hl.c)
-    target_link_libraries(tjunittest-static turbojpeg-static)
+#    add_executable(tjunittest-static tjunittest.c tjutil.c md5/md5.c
+#      md5/md5hl.c)
+#    target_link_libraries(tjunittest-static turbojpeg-static)
 
-    add_executable(tjbench-static tjbench.c tjutil.c)
-    target_link_libraries(tjbench-static turbojpeg-static)
-    if(UNIX)
-      target_link_libraries(tjbench-static m)
-    endif()
+#    add_executable(tjbench-static tjbench.c tjutil.c)
+#    target_link_libraries(tjbench-static turbojpeg-static)
+#    if(UNIX)
+#      target_link_libraries(tjbench-static m)
+#    endif()
   endif()
 endif()
 
@@ -664,25 +660,25 @@ else()
   set(DJPEG_BMP_SOURCES wrbmp.c wrtarga.c)
 endif()
 
-if(ENABLE_STATIC)
-  add_executable(cjpeg-static cjpeg.c cdjpeg.c rdgif.c rdppm.c rdswitch.c
-    ${CJPEG_BMP_SOURCES})
-  set_property(TARGET cjpeg-static PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
-  target_link_libraries(cjpeg-static jpeg-static)
+#if(ENABLE_STATIC)
+#  add_executable(cjpeg-static cjpeg.c cdjpeg.c rdgif.c rdppm.c rdswitch.c
+#    ${CJPEG_BMP_SOURCES})
+#  set_property(TARGET cjpeg-static PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
+#  target_link_libraries(cjpeg-static jpeg-static)
+#
+#  add_executable(djpeg-static djpeg.c cdjpeg.c rdcolmap.c rdswitch.c wrgif.c
+#    wrppm.c ${DJPEG_BMP_SOURCES})
+#  set_property(TARGET djpeg-static PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
+#  target_link_libraries(djpeg-static jpeg-static)
+#
+#  add_executable(jpegtran-static jpegtran.c cdjpeg.c rdswitch.c transupp.c)
+#  target_link_libraries(jpegtran-static jpeg-static)
+#  set_property(TARGET jpegtran-static PROPERTY COMPILE_FLAGS "${USE_SETMODE}")
+#endif()
 
-  add_executable(djpeg-static djpeg.c cdjpeg.c rdcolmap.c rdswitch.c wrgif.c
-    wrppm.c ${DJPEG_BMP_SOURCES})
-  set_property(TARGET djpeg-static PROPERTY COMPILE_FLAGS ${COMPILE_FLAGS})
-  target_link_libraries(djpeg-static jpeg-static)
+#add_executable(rdjpgcom rdjpgcom.c)
 
-  add_executable(jpegtran-static jpegtran.c cdjpeg.c rdswitch.c transupp.c)
-  target_link_libraries(jpegtran-static jpeg-static)
-  set_property(TARGET jpegtran-static PROPERTY COMPILE_FLAGS "${USE_SETMODE}")
-endif()
-
-add_executable(rdjpgcom rdjpgcom.c)
-
-add_executable(wrjpgcom wrjpgcom.c)
+#add_executable(wrjpgcom wrjpgcom.c)
 
 
 ###############################################################################
@@ -1444,30 +1440,30 @@ if(ENABLE_STATIC)
   install(TARGETS jpeg-static EXPORT ${CMAKE_PROJECT_NAME}Targets
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
-  if(NOT ENABLE_SHARED)
-    if(MSVC_IDE OR XCODE)
-      set(DIR "${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_INSTALL_CONFIG_NAME}")
-    else()
-      set(DIR ${CMAKE_CURRENT_BINARY_DIR})
-    endif()
-    install(PROGRAMS ${DIR}/cjpeg-static${EXE}
-      DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME cjpeg${EXE})
-    install(PROGRAMS ${DIR}/djpeg-static${EXE}
-      DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME djpeg${EXE})
-    install(PROGRAMS ${DIR}/jpegtran-static${EXE}
-      DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME jpegtran${EXE})
-  endif()
+#  if(NOT ENABLE_SHARED)
+#    if(MSVC_IDE OR XCODE)
+#      set(DIR "${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_INSTALL_CONFIG_NAME}")
+#    else()
+#      set(DIR ${CMAKE_CURRENT_BINARY_DIR})
+#    endif()
+#    install(PROGRAMS ${DIR}/cjpeg-static${EXE}
+#      DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME cjpeg${EXE})
+#    install(PROGRAMS ${DIR}/djpeg-static${EXE}
+#      DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME djpeg${EXE})
+#    install(PROGRAMS ${DIR}/jpegtran-static${EXE}
+#      DESTINATION ${CMAKE_INSTALL_BINDIR} RENAME jpegtran${EXE})
+#  endif()
 endif()
 
-install(TARGETS rdjpgcom wrjpgcom RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+#install(TARGETS rdjpgcom wrjpgcom RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.ijg
-  ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/example.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/tjexample.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/libjpeg.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/structure.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/usage.txt ${CMAKE_CURRENT_SOURCE_DIR}/wizard.txt
-  ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
+#install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/README.ijg
+#  ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_CURRENT_SOURCE_DIR}/example.txt
+#  ${CMAKE_CURRENT_SOURCE_DIR}/tjexample.c
+#  ${CMAKE_CURRENT_SOURCE_DIR}/libjpeg.txt
+#  ${CMAKE_CURRENT_SOURCE_DIR}/structure.txt
+#  ${CMAKE_CURRENT_SOURCE_DIR}/usage.txt ${CMAKE_CURRENT_SOURCE_DIR}/wizard.txt
+#  ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
 if(WITH_JAVA)
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/java/TJExample.java
     DESTINATION ${CMAKE_INSTALL_DOCDIR})
@@ -1501,4 +1497,4 @@ include(cmakescripts/BuildPackages.cmake)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmakescripts/cmake_uninstall.cmake.in"
   "cmake_uninstall.cmake" IMMEDIATE @ONLY)
 
-add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P cmake_uninstall.cmake)
+#add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P cmake_uninstall.cmake)
